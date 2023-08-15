@@ -358,6 +358,12 @@ void setupPlasmaEnvironment()
         qputenv("XDG_RUNTIME_DIR", runtimeDir);
     }
 
+#ifdef __CHERI_PURE_CAPABILITY__
+    if (!qEnvironmentVariableIsSet("XDG_DATA_DIRS")) {
+        qputenv("XDG_DATA_DIRS", "/usr/local/share:/usr/local64/share:/usr/share");
+    }
+#endif
+
     const KConfig globals;
     const QString currentLnf = KConfigGroup(&globals, QStringLiteral("KDE")).readEntry("LookAndFeelPackage", QStringLiteral("org.kde.breeze.desktop"));
     QFile activeLnf(extraConfigDir + QLatin1String("/package"));
