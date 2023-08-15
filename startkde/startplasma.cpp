@@ -350,6 +350,14 @@ void setupPlasmaEnvironment()
     QDir().mkpath(extraConfigDir);
     qputenv("XDG_CONFIG_DIRS", QFile::encodeName(extraConfigDir) + ':' + currentConfigDirs);
 
+    // Wayland sockets live in XDG_RUNTIME_DIR so make sure it's set. Other
+    // uses, including X applications, should have fallbacks, but can still
+    // benefit from it, and Qt will warn when it's not set.
+    if (!qEnvironmentVariableIsSet("XDG_RUNTIME_DIR")) {
+        const auto runtimeDir = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation).toUtf8();
+        qputenv("XDG_RUNTIME_DIR", runtimeDir);
+    }
+
     const KConfig globals;
     const QString currentLnf = KConfigGroup(&globals, QStringLiteral("KDE")).readEntry("LookAndFeelPackage", QStringLiteral("org.kde.breeze.desktop"));
     QFile activeLnf(extraConfigDir + QLatin1String("/package"));
